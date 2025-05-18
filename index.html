@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Сортировка оценок (0–8)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      padding: 30px;
+      text-align: center;
+    }
+    input, button {
+      font-size: 16px;
+      padding: 10px;
+      margin: 5px;
+      width: 300px;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Сортировка оценок (от 0 до 8)</h1>
+  <p>Введите оценки через запятую (например: 5,7,3,8):</p>
+  <input id="gradesInput" placeholder="0,3,5,8" />
+
+  <br>
+
+  <button onclick="sortGrades('asc')">Сортировать по возрастанию ↑</button>
+  <button onclick="sortGrades('desc')">Сортировать по убыванию ↓</button>
+
+  <div id="result"></div>
+
+  <script>
+    function quickSort(arr) {
+      if (arr.length <= 1) return arr;
+      const pivot = arr[arr.length - 1];
+      const left = [], right = [];
+      for (let i = 0; i < arr.length - 1; i++) {
+        if (arr[i] < pivot) left.push(arr[i]);
+        else right.push(arr[i]);
+      }
+      return [...quickSort(left), pivot, ...quickSort(right)];
+    }
+
+    function sortGrades(order) {
+      const input = document.getElementById("gradesInput").value;
+      const rawValues = input.split(",").map(s => s.trim());
+      const grades = [];
+
+      for (const val of rawValues) {
+        const num = parseFloat(val);
+        if (isNaN(num) || num < 0 || num > 8) {
+          document.getElementById("result").innerHTML = `<div class="error">❌ Ошибка: оценки должны быть числами от 0 до 8</div>`;
+          return;
+        }
+        grades.push(num);
+      }
+
+      let sorted = quickSort(grades);
+      if (order === 'desc') sorted.reverse();
+
+      const average = (grades.reduce((a, b) => a + b, 0) / grades.length).toFixed(2);
+
+      document.getElementById("result").innerHTML = `
+        ✅ Отсортировано (${order === 'asc' ? 'возрастание' : 'убывание'}): <b>${sorted.join(", ")}</b><br>
+        📊 Среднее значение: <b>${average}</b>
+      `;
+    }
+  </script>
+</body>
+</html>
